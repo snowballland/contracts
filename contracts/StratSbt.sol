@@ -6,19 +6,19 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "../IPancakeswapFarm.sol";
-import "../IPancakeRouter02.sol";
+import "./IPancakeswapFarm.sol";
+import "./IPancakeRouter02.sol";
 
-contract StratX is Ownable, ReentrancyGuard, Pausable {
+contract StratSbt is Ownable, ReentrancyGuard, Pausable {
     // Maximises yields in pancakeswap
 
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
     bool public isCAKEStaking; // only for staking CAKE using pancakeswap's native CAKE staking contract.
-    bool public isAutoComp; // this vault is purely for staking. eg. WBNB-AUTO staking vault.
+    bool public isAutoComp; // this vault is purely for staking. eg. WBNB-SBT staking vault.
 
-    address public farmContractAddress; // address of farm, eg, PCS, Thugs etc.
+    address public farmContractAddress; // address of farm, eg, PCS etc.
     uint256 public pid; // pid of pool in farmContractAddress
     address public wantAddress;
     address public token0Address;
@@ -28,8 +28,8 @@ contract StratX is Ownable, ReentrancyGuard, Pausable {
 
     address public constant wbnbAddress =
         0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c;
-    address public autoFarmAddress;
-    address public AUTOAddress;
+    address public snowballLandFarmAddress;
+    address public sbtAddress;
     address public govAddress; // timelock contract
     bool public onlyGov = true;
 
@@ -51,15 +51,15 @@ contract StratX is Ownable, ReentrancyGuard, Pausable {
     uint256 public constant entranceFeeFactorMax = 10000;
     uint256 public constant entranceFeeFactorLL = 9950; // 0.5% is the max entrance fee settable. LL = lowerlimit
 
-    address[] public earnedToAUTOPath;
+    address[] public earnedToSbtPath;
     address[] public earnedToToken0Path;
     address[] public earnedToToken1Path;
     address[] public token0ToEarnedPath;
     address[] public token1ToEarnedPath;
 
     constructor(
-        address _autoFarmAddress,
-        address _AUTOAddress,
+        address _snowballLandFarmAddress,
+        address _sbtAddress,
         bool _isCAKEStaking,
         bool _isAutoComp,
         address _farmContractAddress,
@@ -71,8 +71,8 @@ contract StratX is Ownable, ReentrancyGuard, Pausable {
         address _uniRouterAddress
     ) public {
         govAddress = msg.sender;
-        autoFarmAddress = _autoFarmAddress;
-        AUTOAddress = _AUTOAddress;
+        snowballLandFarmAddress = _snowballLandFarmAddress;
+        sbtAddress = _sbtAddress;
 
         isCAKEStaking = _isCAKEStaking;
         isAutoComp = _isAutoComp;
@@ -90,9 +90,9 @@ contract StratX is Ownable, ReentrancyGuard, Pausable {
 
             uniRouterAddress = _uniRouterAddress;
 
-            earnedToAUTOPath = [earnedAddress, wbnbAddress, AUTOAddress];
+            earnedToSbtPath = [earnedAddress, wbnbAddress, sbtAddress];
             if (wbnbAddress == earnedAddress) {
-                earnedToAUTOPath = [wbnbAddress, AUTOAddress];
+                earnedToSbtPath = [wbnbAddress, sbtAddress];
             }
 
             earnedToToken0Path = [earnedAddress, wbnbAddress, token0Address];
@@ -116,7 +116,7 @@ contract StratX is Ownable, ReentrancyGuard, Pausable {
             }
         }
 
-        transferOwnership(autoFarmAddress);
+        transferOwnership(snowballLandFarmAddress);
     }
 
     // Receives new deposits from user
@@ -199,7 +199,7 @@ contract StratX is Ownable, ReentrancyGuard, Pausable {
         sharesTotal = sharesTotal.sub(sharesRemoved);
         wantLockedTotal = wantLockedTotal.sub(_wantAmt);
 
-        IERC20(wantAddress).safeTransfer(autoFarmAddress, _wantAmt);
+        IERC20(wantAddress).safeTransfer(snowballLandFarmAddress, _wantAmt);
 
         return sharesRemoved;
     }
@@ -307,7 +307,7 @@ contract StratX is Ownable, ReentrancyGuard, Pausable {
             .swapExactTokensForTokensSupportingFeeOnTransferTokens(
             buyBackAmt,
             0,
-            earnedToAUTOPath,
+            earnedToSbtPath,
             buyBackAddress,
             now + 60
         );
