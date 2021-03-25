@@ -5,8 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "compile": "npx hardhat compile",
-    "deploy:hardhat": "npx hardhat run --network hardhat scripts/deploy.js"
+    "compile": "npx hardhat compile"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",
