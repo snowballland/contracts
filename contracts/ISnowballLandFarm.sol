@@ -16,7 +16,7 @@ interface ISnowballLandFarm {
         bool _withUpdate
     ) external;
 
-    function pendingSnow(uint256 _pid, address _user) external view returns (uint256);
+    function pendingSbt(uint256 _pid, address _user) external view returns (uint256);
 
     function updatePool(uint256 _pid) external;
 

@@ -47,7 +47,7 @@ contract SnowballLandToken is ERC20("SnowballLand", "SBT"), Ownable {
     }
 
     function manualMint(address _to, uint256 _amount) public onlyOwner {
-        require(manualMinted <= manualMintLimit, "mint limit exceeded");
+        require(manualMinted.add(_amount) <= manualMintLimit, "mint limit exceeded");
         manualMinted = manualMinted.add(_amount);
         mint(_to, _amount);
     }
