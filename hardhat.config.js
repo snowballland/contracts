@@ -8,5 +8,17 @@ require("@nomiclabs/hardhat-waffle");
  */
 module.exports = {
   solidity: "0.6.12",
+  networks: {
+    testnet: {
+      url: "https://data-seed-prebsc-2-s1.binance.org:8545/",
+      chainId: 97,
+      accounts: [process.env.PK],
+    },
+    mainnet: {
+      url: "https://bsc-dataseed.binance.org",
+      chainId: 56,
+      // accounts: [process.env.PK],
+    },
+  },
 };
 
