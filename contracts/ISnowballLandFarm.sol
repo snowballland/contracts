@@ -7,7 +7,8 @@ interface ISnowballLandFarm {
     function addPool(
         uint256 _allocPoint,
         address _stakeToken,
-        bool _withUpdate
+        bool _withUpdate,
+        address _strat
     ) external;
 
     function setPool(

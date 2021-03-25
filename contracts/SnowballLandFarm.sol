@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./SnowballLandToken.sol";
 import "./ISnowballLandFarm.sol";
+import "./IStrategy.sol";
 
 // SnowballLandFarm is a smart contract for distributing SBT by asking user to stake the ERC20-based token.
 contract SnowballLandFarm is ISnowballLandFarm, Ownable {
@@ -37,6 +38,7 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         uint256 lastRewardBlock; // Last block number that SBTs distribution occurs.
         uint256 accSbtPerShare; // Accumulated SBTs per share, times 1e12. See below.
         uint256 accSbtPerShareTilBonusEnd; // Accumated SBTs per share until Bonus End.
+        address strat; // Strategy address that will auto compound want tokens
     }
 
     // The Sbt TOKEN!
@@ -120,7 +122,8 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     function addPool(
         uint256 _allocPoint,
         address _stakeToken,
-        bool _withUpdate
+        bool _withUpdate,
+        address _strat
     ) public override onlyOwner {
         if (_withUpdate) {
             massUpdatePools();
@@ -135,7 +138,8 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
                 allocPoint: _allocPoint,
                 lastRewardBlock: lastRewardBlock,
                 accSbtPerShare: 0,
-                accSbtPerShareTilBonusEnd: 0
+                accSbtPerShareTilBonusEnd: 0,
+                strat: _strat
             })
         );
     }
@@ -180,6 +184,9 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
 
     // Return reward multiplier over the given _from to _to block.
     function getMultiplier(uint256 _lastRewardBlock, uint256 _currentBlock) public view returns (uint256) {
+        if (SnowballLandToken(sbt).totalSupply() >= SnowballLandToken(sbt).cap()) {
+            return 0;
+        }
         if (_currentBlock <= bonusEndBlock) {
             return _currentBlock.sub(_lastRewardBlock).mul(bonusMultiplier);
         }
@@ -195,13 +202,30 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accSbtPerShare = pool.accSbtPerShare;
-        uint256 lpSupply = IERC20(pool.stakeToken).balanceOf(address(this));
-        if (block.number > pool.lastRewardBlock && lpSupply != 0) {
+        uint256 sharesTotal = IStrategy(pool.strat).sharesTotal();
+        if (block.number > pool.lastRewardBlock && sharesTotal != 0) {
             uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
             uint256 sbtReward = multiplier.mul(sbtPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
-            accSbtPerShare = accSbtPerShare.add(sbtReward.mul(1e12).div(lpSupply));
+            accSbtPerShare = accSbtPerShare.add(sbtReward.mul(1e12).div(sharesTotal));
         }
         return user.amount.mul(accSbtPerShare).div(1e12).sub(user.rewardDebt);
+    }
+
+    // View function to see staked Want tokens on frontend.
+    function stakedWantTokens(uint256 _pid, address _user)
+        external
+        view
+        returns (uint256)
+    {
+        PoolInfo storage pool = poolInfo[_pid];
+        UserInfo storage user = userInfo[_pid][_user];
+
+        uint256 sharesTotal = IStrategy(pool.strat).sharesTotal();
+        uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat).wantLockedTotal();
+        if (sharesTotal == 0) {
+            return 0;
+        }
+        return user.amount.mul(wantLockedTotal).div(sharesTotal);
     }
 
     // Update reward vairables for all pools. Be careful of gas spending!
@@ -218,8 +242,8 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         if (block.number <= pool.lastRewardBlock) {
             return;
         }
-        uint256 lpSupply = IERC20(pool.stakeToken).balanceOf(address(this));
-        if (lpSupply == 0) {
+        uint256 sharesTotal = IStrategy(pool.strat).sharesTotal();
+        if (sharesTotal == 0) {
             pool.lastRewardBlock = block.number;
             return;
         }
@@ -227,7 +251,7 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         uint256 sbtReward = multiplier.mul(sbtPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
         sbt.mint(devaddr, sbtReward.div(10));
         sbt.mint(address(this), sbtReward);
-        pool.accSbtPerShare = pool.accSbtPerShare.add(sbtReward.mul(1e12).div(lpSupply));
+        pool.accSbtPerShare = pool.accSbtPerShare.add(sbtReward.mul(1e12).div(sharesTotal));
         // update accSbtPerShareTilBonusEnd
         if (block.number <= bonusEndBlock) {
             sbt.lock(devaddr, sbtReward.div(10).mul(bonusLockUpBps).div(10000));
@@ -236,7 +260,7 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         if(block.number > bonusEndBlock && pool.lastRewardBlock < bonusEndBlock) {
             uint256 sbtBonusPortion = bonusEndBlock.sub(pool.lastRewardBlock).mul(bonusMultiplier).mul(sbtPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
             sbt.lock(devaddr, sbtBonusPortion.div(10).mul(bonusLockUpBps).div(10000));
-            pool.accSbtPerShareTilBonusEnd = pool.accSbtPerShareTilBonusEnd.add(sbtBonusPortion.mul(1e12).div(lpSupply));
+            pool.accSbtPerShareTilBonusEnd = pool.accSbtPerShareTilBonusEnd.add(sbtBonusPortion.mul(1e12).div(sharesTotal));
         }
         pool.lastRewardBlock = block.number;
     }
@@ -251,7 +275,9 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         if (user.amount > 0) _harvest(_for, _pid);
         if (user.fundedBy == address(0)) user.fundedBy = msg.sender;
         IERC20(pool.stakeToken).safeTransferFrom(address(msg.sender), address(this), _amount);
-        user.amount = user.amount.add(_amount);
+        IERC20(pool.stakeToken).safeIncreaseAllowance(pool.strat, _amount);
+        uint256 sharesAdded = IStrategy(poolInfo[_pid].strat).deposit(msg.sender, _amount);
+        user.amount = user.amount.add(sharesAdded);
         user.rewardDebt = user.amount.mul(pool.accSbtPerShare).div(1e12);
         user.bonusDebt = user.amount.mul(pool.accSbtPerShareTilBonusEnd).div(1e12);
         emit Deposit(msg.sender, _pid, _amount);
@@ -269,18 +295,36 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     function _withdraw(address _for, uint256 _pid, uint256 _amount) internal {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_for];
+        uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat).wantLockedTotal();
+        uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
         require(user.fundedBy == msg.sender, "only funder");
         require(user.amount >= _amount, "withdraw: not good");
+        require(user.amount > 0, "user.amount is 0");
+        require(sharesTotal > 0, "sharesTotal is 0");
         updatePool(_pid);
         _harvest(_for, _pid);
-        user.amount = user.amount.sub(_amount);
+        if (pool.stakeToken != address(0)) {
+            uint256 amount = user.amount.mul(wantLockedTotal).div(sharesTotal);
+            if (_amount > amount) {
+                _amount = amount;
+            }
+            if (_amount > 0) {
+                uint256 sharesRemoved = IStrategy(poolInfo[_pid].strat).withdraw(msg.sender, _amount);
+                if (sharesRemoved > user.amount) {
+                    user.amount = 0;
+                } else {
+                    user.amount = user.amount.sub(sharesRemoved);
+                }
+                uint256 wantBal = IERC20(pool.stakeToken).balanceOf(address(this));
+                if (wantBal < _amount) {
+                    _amount = wantBal;
+                }
+                IERC20(pool.stakeToken).safeTransfer(address(msg.sender), _amount);
+            }
+        }
         user.rewardDebt = user.amount.mul(pool.accSbtPerShare).div(1e12);
         user.bonusDebt = user.amount.mul(pool.accSbtPerShareTilBonusEnd).div(1e12);
-        user.fundedBy = address(0);
-        if (pool.stakeToken != address(0)) {
-            IERC20(pool.stakeToken).safeTransfer(address(msg.sender), _amount);
-        }
-        emit Withdraw(msg.sender, _pid, user.amount);
+        emit Withdraw(msg.sender, _pid, _amount);
     }
 
     // Harvest SBTs earn from the pool.
@@ -308,7 +352,11 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     function emergencyWithdraw(uint256 _pid) public {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
-        IERC20(pool.stakeToken).safeTransfer(address(msg.sender), user.amount);
+        uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat).wantLockedTotal();
+        uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
+        uint256 amount = user.amount.mul(wantLockedTotal).div(sharesTotal);
+        IStrategy(poolInfo[_pid].strat).withdraw(msg.sender, amount);
+        IERC20(pool.stakeToken).safeTransfer(address(msg.sender), amount);
         emit EmergencyWithdraw(msg.sender, _pid, user.amount);
         user.amount = 0;
         user.rewardDebt = 0;
@@ -324,4 +372,8 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         }
     }
 
+    function inCaseTokensGetStuck(address _token, uint256 _amount) public onlyOwner {
+        require(_token != address(sbt), "!safe");
+        IERC20(_token).safeTransfer(msg.sender, _amount);
+    }
 }
