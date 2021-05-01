@@ -20,5 +20,17 @@ module.exports = {
       // accounts: [process.env.PK],
     },
   },
+  abiExporter: {
+    path: './abi',
+    clear: true,
+    flat: false,
+    only: [],
+    spacing: 2
+  },
+  etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://etherscan.io/
+    //apiKey: ""
+  },
 };
 
