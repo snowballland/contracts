@@ -3,15 +3,15 @@ module.exports = {
   devAddr: '0x42176E273474BED9bb34de2Ac4B39b3E8c015D14', // TODO: Change to dev address
   minter: '0x42176E273474BED9bb34de2Ac4B39b3E8c015D14', // TODO: Change to liquidity seeder address
   sbtPerBlock: 0.75,
-  startBlock: 7134300, // TODO: Change to intended starting block number
+  startBlock: 7097150, // TODO: Change to intended starting block number  7073150+20*60*20
   bonusLockupBps: 7000, // 70%
-  bonusEndBlock: 7537500, // startBlock + 403200 (14 days)
+  bonusEndBlock: 7125950, // startBlock + 28800 (24 hours)
   bonusMultiplier: 5, // (4.5-0.75)/0.75 = 5
-  startReleaseBlock: 8375949, // bonusEndBlock + 838449 (30 days)
-  endReleaseBlock: 8575949, // startReleaseBlock + 200000 (7 days)
+  startReleaseBlock: 7140350, // bonusEndBlock + 14400 (12 hours)
+  endReleaseBlock: 7169150, // startReleaseBlock + 28800 (24 hours)
   // Strategy (values depend on different cases, hence require changes on deploy)
-  sbtAddress: '0x0000000000000000000000000000000000000000', // TODO: Change to SBT address
-  snowballLandFarmAddress: '0x0000000000000000000000000000000000000000', // TODO: Change to SnowballLandFarm address
+  sbtAddress: '0x2f0c723f427c052C611C2B1947F420800dC51BFa', // TODO: Change to SBT address
+  snowballLandFarmAddress: '0xFBa43035ab3e83d84B94F24131E7dc6E37047e16', // TODO: Change to SnowballLandFarm address
   isCAKEStaking: false, // Strategy dependent
   isAutoComp: false, // Strategy dependent
   farmContractAddress: '0x0000000000000000000000000000000000000000', // Refers to underlying farm contract (pancakeswap masterchef etc)

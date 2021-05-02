@@ -52,7 +52,7 @@ async function main() {
     wantsbtWbnbAddress, token0Address, token1Address, earnedAddress, uniRouterAddress,
   );
   await stratSbt.deployed();
-  console.log("stratSbt deployed to:", stratSbt.address);
+  console.log("sbt-wbnb stratSbt deployed to:", stratSbt.address);
   console.log("- Constructor Args -");
   console.log(snowballLandFarmAddress);
   console.log(sbtAddress);
