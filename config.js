@@ -1,14 +1,14 @@
 module.exports = {
   // SnowballLand
-  devAddr: '0x0000000000000000000000000000000000000000', // TODO: Change to dev address
-  minter: '0x0000000000000000000000000000000000000000', // TODO: Change to liquidity seeder address
+  devAddr: '0xc957B2CdA38E52F9b5Cd1Bf5Ff9512Ae850Ec793', // TODO: Change to dev address
+  minter: '0xe177d066ce4060Ff5B8F20f8c0eb591bf2FBd7bE', // TODO: Change to liquidity seeder address
   sbtPerBlock: 0.75,
-  startBlock: 7097150, // TODO: Change to intended starting block number 
+  startBlock: 7272980, // TODO: Change to intended starting block number 
   bonusLockupBps: 7000, // 70%
-  bonusEndBlock: 7125950, // startBlock + 14*28800 (14 days) 
+  bonusEndBlock: 7676180, // startBlock + 14*28800 (14 days) 
   bonusMultiplier: 5, // (4.5-0.75)/0.75 = 5
-  startReleaseBlock: 7140350, // bonusEndBlock
-  endReleaseBlock: 7169150, // startReleaseBlock + 70 * 28800 (24 hours)
+  startReleaseBlock: 7676180, // bonusEndBlock
+  endReleaseBlock: 9692180, // startReleaseBlock + 70 * 28800 (24 hours)
   // Strategy (values depend on different cases, hence require changes on deploy)
   sbtAddress: '0x0000000000000000000000000000000000000000', // TODO: Change to SBT address
   snowballLandFarmAddress: '0x0000000000000000000000000000000000000000', // TODO: Change to SnowballLandFarm address

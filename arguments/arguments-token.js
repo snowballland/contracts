@@ -1,7 +1,7 @@
 module.exports = [
-    7140350,
-    7169150,
-    '0x42176E273474BED9bb34de2Ac4B39b3E8c015D14',
+    7676180,
+    9692180,
+    '0xe177d066ce4060Ff5B8F20f8c0eb591bf2FBd7bE',
   ]
 // verify command
-// npx hardhat verify --network mainnet --constructor-args arguments/arguments-token.js 0x2f0c723f427c052C611C2B1947F420800dC51BFa
+// npx hardhat verify --network mainnet --constructor-args arguments/arguments-token.js 0x23dE6D136ae765f256619c57201FF57C25ACB565
