@@ -182,6 +182,10 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         sbt.manualMint(_to, _amount);
     }
 
+    function setReleaseBlock(uint256 _startReleaseBlock, uint256 _endReleaseBlock) public onlyOwner {
+        sbt.setReleaseBlock(_startReleaseBlock, _endReleaseBlock);
+    }
+
     // Return reward multiplier over the given _from to _to block.
     function getMultiplier(uint256 _lastRewardBlock, uint256 _currentBlock) public view returns (uint256) {
         if (SnowballLandToken(sbt).totalSupply() >= SnowballLandToken(sbt).cap()) {

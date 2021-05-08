@@ -13,11 +13,13 @@ module.exports = {
     testnet: {
       url: "https://data-seed-prebsc-2-s1.binance.org:8545/",
       chainId: 97,
+      //enter your privKey
       accounts: [''],
     },
     mainnet: {
       url: "https://bsc-dataseed.binance.org",
       chainId: 56,
+      //enter your privKey
       accounts: [''],
     },
   },
