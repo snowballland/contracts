@@ -4,12 +4,7 @@
 
 Verify that `config.js` has the correct information
 
-Export the private key of the deployer
-
-```
-export PK=PRIVATE_KEY
-yarn deploy:[network]:[task]
-```
+Fill in the private key in hardhat.config.js
 
 ## Initialization
 

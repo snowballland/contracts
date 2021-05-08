@@ -4,7 +4,7 @@ pragma solidity ^0.6.12;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract SnowballLandToken is ERC20("SnowballLand", "SBT"), Ownable {
+contract SnowballLandToken is ERC20("SnowballLandUAT", "SBUAT"), Ownable {
     uint256 private _cap = 10000000e18;
     uint256 private _totalLock;
 
