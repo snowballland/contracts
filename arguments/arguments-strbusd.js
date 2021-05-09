@@ -1,6 +1,6 @@
 module.exports = [
-  '0xFBa43035ab3e83d84B94F24131E7dc6E37047e16',
-  '0x2f0c723f427c052C611C2B1947F420800dC51BFa',
+  '0x4037b7d049b5CD3044Dad8957204cBa1627621bc',
+  '0x23dE6D136ae765f256619c57201FF57C25ACB565',
   false,
   false,
   '0x0000000000000000000000000000000000000000',
@@ -13,4 +13,4 @@ module.exports = [
 ]
 
 // verify command
-// npx hardhat verify --network mainnet --constructor-args arguments/arguments-strbusd.js 0x9e6843F5e8A8176801D1093b8a43008ed4dD8068
+// npx hardhat verify --network mainnet --constructor-args arguments/arguments-strbusd.js 0x9c77dD3DF52EA53c38828853A137ca30d017e794
