@@ -5,7 +5,7 @@ module.exports = {
   sbtPerBlock: 0.75,
   startBlock: 7272980, // TODO: Change to intended starting block number 
   bonusLockupBps: 7000, // 70%
-  bonusEndBlock: 7676180, // startBlock + 14*28800 (14 days) 
+  bonusEndBlock: 7676180, // startBlock + 14 * 28800 (14 days) 
   bonusMultiplier: 5, // (4.5-0.75)/0.75 = 5
   startReleaseBlock: 7676180, // bonusEndBlock
   endReleaseBlock: 9692180, // startReleaseBlock + 70 * 28800 (70 days)
