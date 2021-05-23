@@ -5,7 +5,7 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 const { parseEther } = require("ethers/lib/utils");
-const config = require('../config');
+const config = require('../config/config');
 
 // Farm
 const devAddr = config.devAddr;

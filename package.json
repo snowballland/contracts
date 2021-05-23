@@ -11,7 +11,8 @@
     "deploy:snow:testnet": "npx hardhat run --network testnet scripts/deploy-snowball.js",
     "deploy:strategySbt:testnet": "npx hardhat run --network testnet scripts/deploy-strategySbt.js",
     "deploy:snow:mainnet": "npx hardhat run --network mainnet scripts/deploy-snowball.js",
-    "deploy:strategySbt:mainnet": "npx hardhat run --network mainnet scripts/deploy-strategySbt.js"
+    "deploy:strategySbt:mainnet": "npx hardhat run --network mainnet scripts/deploy-strategySbt.js",
+    "deploy:strategySbt2:mainnet": "npx hardhat run --network mainnet scripts/deploy-strategySbt2.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",

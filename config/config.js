@@ -21,12 +21,12 @@ module.exports = {
   earnedAddress: '0x0000000000000000000000000000000000000000', // Refers to earned (yielded) token
   uniRouterAddress: '0x0000000000000000000000000000000000000000', // Refers AMM router (pancakeswap etc)
   wantsbtWbnbAddress: '0xadebe0f7f3ef77170d13e125149b72ac54d14d44', // Refers to deposited token
-  sbtWbnbAllocPoint: 6000, // Refers farm allocation points,totoal Point 10000
+  sbtWbnbAllocPoint: 6000, // Refers farm allocation points
   sbtWbnbWithUpdate: false, // Refers to calling update on pools
   wantBusdAddress: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // Refers to deposited token
-  busdAllocPoint: 2000, // Refers farm allocation points,totoal Point 10000
+  busdAllocPoint: 2000, // Refers farm allocation points
   busdWithUpdate: false, // Refers to calling update on pools
   wantWbnbAddress: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // Refers to deposited token
-  wbnbAllocPoint: 2000, // Refers farm allocation points,totoal Point 10000
+  wbnbAllocPoint: 2000, // Refers farm allocation points
   wbnbWithUpdate: false, // Refers to calling update on pools
 };
