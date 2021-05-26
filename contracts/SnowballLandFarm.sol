@@ -270,12 +270,12 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     }
 
     // Deposit Staking tokens to SbtFarmToken for SBT allocation.
-    function deposit(address _for, uint256 _pid, uint256 _amount) public override {
+    function deposit(uint256 _pid, uint256 _amount) public override {
         PoolInfo storage pool = poolInfo[_pid];
-        UserInfo storage user = userInfo[_pid][_for];
+        UserInfo storage user = userInfo[_pid][msg.sender];
         require(pool.stakeToken != address(0), "deposit: not accept deposit");
         updatePool(_pid);
-        if (user.amount > 0) _harvest(_for, _pid);
+        if (user.amount > 0) _harvest(msg.sender, _pid);
         IERC20(pool.stakeToken).safeTransferFrom(address(msg.sender), address(this), _amount);
         IERC20(pool.stakeToken).safeIncreaseAllowance(pool.strat, _amount);
         uint256 sharesAdded = IStrategy(poolInfo[_pid].strat).deposit(msg.sender, _amount);
@@ -286,23 +286,23 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     }
 
     // Withdraw Staking tokens from SnowballLandFarmToken.
-    function withdraw(address _for, uint256 _pid, uint256 _amount) public override {
-        _withdraw(_for, _pid, _amount);
+    function withdraw(uint256 _pid, uint256 _amount) public override {
+        _withdraw(_pid, _amount);
     }
 
-    function withdrawAll(address _for, uint256 _pid) public override {
-        _withdraw(_for, _pid, uint256(-1));
+    function withdrawAll(uint256 _pid) public override {
+        _withdraw(_pid, uint256(-1));
     }
 
-    function _withdraw(address _for, uint256 _pid, uint256 _amount) internal {
+    function _withdraw(uint256 _pid, uint256 _amount) internal {
         PoolInfo storage pool = poolInfo[_pid];
-        UserInfo storage user = userInfo[_pid][_for];
+        UserInfo storage user = userInfo[_pid][msg.sender];
         uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat).wantLockedTotal();
         uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
         require(user.amount > 0, "user.amount is 0");
         require(sharesTotal > 0, "sharesTotal is 0");
         updatePool(_pid);
-        _harvest(_for, _pid);
+        _harvest(msg.sender, _pid);
         if (pool.stakeToken != address(0)) {
             uint256 amount = user.amount.mul(wantLockedTotal).div(sharesTotal);
             if (_amount > amount) {
