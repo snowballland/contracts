@@ -17,7 +17,6 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         uint256 amount; // How many Staking tokens the user has provided.
         uint256 rewardDebt; // Reward debt. See explanation below.
         uint256 bonusDebt; // Last block that user exec something to the pool.
-        address fundedBy; // Funded by who?
         //
         // We do some fancy math here. Basically, any point in time, the amount of SBTs
         // entitled to a user but is pending to be distributed is:
@@ -274,11 +273,9 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     function deposit(address _for, uint256 _pid, uint256 _amount) public override {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_for];
-        if (user.fundedBy != address(0)) require(user.fundedBy == msg.sender, "bad sof");
         require(pool.stakeToken != address(0), "deposit: not accept deposit");
         updatePool(_pid);
         if (user.amount > 0) _harvest(_for, _pid);
-        if (user.fundedBy == address(0)) user.fundedBy = msg.sender;
         IERC20(pool.stakeToken).safeTransferFrom(address(msg.sender), address(this), _amount);
         IERC20(pool.stakeToken).safeIncreaseAllowance(pool.strat, _amount);
         uint256 sharesAdded = IStrategy(poolInfo[_pid].strat).deposit(msg.sender, _amount);
@@ -302,7 +299,6 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         UserInfo storage user = userInfo[_pid][_for];
         uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat).wantLockedTotal();
         uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
-        require(user.fundedBy == msg.sender, "only funder");
         require(user.amount > 0, "user.amount is 0");
         require(sharesTotal > 0, "sharesTotal is 0");
         updatePool(_pid);
