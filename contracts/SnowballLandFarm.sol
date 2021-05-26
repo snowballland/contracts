@@ -111,7 +111,6 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         uint256 _bonusEndBlock,
         uint256 _bonusLockUpBps
     ) public onlyOwner {
-        require(_bonusEndBlock > block.number, "setBonus: bad bonusEndBlock");
         require(_bonusMultiplier > 1, "setBonus: bad bonusMultiplier");
         bonusMultiplier = _bonusMultiplier;
         bonusEndBlock = _bonusEndBlock;
