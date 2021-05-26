@@ -47,7 +47,7 @@ contract StratSbt is Ownable, ReentrancyGuard, Pausable {
     address public constant buyBackAddress =
         0x000000000000000000000000000000000000dEaD;
 
-    uint256 public entranceFeeFactor = 9990; // < 0.1% entrance fee - goes to pool + prevents front-running
+    uint256 public entranceFeeFactor = 10000; // < 0.1% entrance fee - goes to pool + prevents front-running
     uint256 public constant entranceFeeFactorMax = 10000;
     uint256 public constant entranceFeeFactorLL = 9950; // 0.5% is the max entrance fee settable. LL = lowerlimit
 
