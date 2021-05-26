@@ -293,7 +293,7 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     }
 
     function withdrawAll(address _for, uint256 _pid) public override {
-        _withdraw(_for, _pid, userInfo[_pid][_for].amount);
+        _withdraw(_for, _pid, uint256(-1));
     }
 
     function _withdraw(address _for, uint256 _pid, uint256 _amount) internal {
@@ -302,7 +302,6 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat).wantLockedTotal();
         uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
         require(user.fundedBy == msg.sender, "only funder");
-        require(user.amount >= _amount, "withdraw: not good");
         require(user.amount > 0, "user.amount is 0");
         require(sharesTotal > 0, "sharesTotal is 0");
         updatePool(_pid);
