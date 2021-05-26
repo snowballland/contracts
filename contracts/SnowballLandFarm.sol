@@ -43,6 +43,7 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
 
     // The Sbt TOKEN!
     SnowballLandToken public sbt;
+    address constant public sbtV1 = 0x23dE6D136ae765f256619c57201FF57C25ACB565;
     // Dev address.
     address public devaddr;
     // SBT tokens created per block.
@@ -378,5 +379,16 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     function inCaseTokensGetStuck(address _token, uint256 _amount) public onlyOwner {
         require(_token != address(sbt), "!safe");
         IERC20(_token).safeTransfer(msg.sender, _amount);
+    }
+
+    function migrateToV2(uint256 _amount) public {
+        require(block.number < 10556180, "too late"); // endReleaseBlock + 30days (9692180 + 864000)
+        IERC20(sbtV1).safeIncreaseAllowance(0x000000000000000000000000000000000000dEaD, _amount);
+        IERC20(sbtV1).safeTransferFrom(
+            address(msg.sender),
+            0x000000000000000000000000000000000000dEaD,
+            _amount
+        );
+        sbt.mint(msg.sender, _amount);
     }
 }
