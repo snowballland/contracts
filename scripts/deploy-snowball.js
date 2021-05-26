@@ -6,6 +6,7 @@
 const hre = require("hardhat");
 const { parseEther } = require("ethers/lib/utils");
 const config = require('../config/config');
+const options = { gasPrice: 5000000000, gasLimit: 200000 };
 
 // Farm
 const devAddr = config.devAddr;
@@ -39,12 +40,13 @@ async function main() {
   console.log(hre.ethers.utils.hexlify(startBlock));
   console.log(hre.ethers.utils.hexlify(bonusLockupBps));
   console.log(hre.ethers.utils.hexlify(bonusEndBlock));
-  console.log("--------------------");
+  console.log("--------------------"); 
 
-  await snowballLandFarm.setBonus(bonusMultiplier, bonusEndBlock, bonusLockupBps);
+  
+  await snowballLandFarm.setBonus(bonusMultiplier, bonusEndBlock, bonusLockupBps, options);
   console.log("SnowballLandFarm bonus set");
 
-  await snowballLandToken.transferOwnership(snowballLandFarm.address);
+  await snowballLandToken.transferOwnership(snowballLandFarm.address, options);
   console.log("snowballLandToken ownership transferred to snowballLandFarm");
 }
 

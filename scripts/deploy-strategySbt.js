@@ -30,6 +30,7 @@ const busdWithUpdate = config.busdWithUpdate;
 const wbnbAllocPoint = config.wbnbAllocPoint;
 const wantWbnbAddress = config.wantWbnbAddress; 
 const wbnbWithUpdate = config.wbnbWithUpdate;
+const options = { gasPrice: 5000000000, gasLimit: 200000 };
 
 async function main() {
   const network = hre.network.name;
@@ -95,17 +96,17 @@ async function main() {
   }
   const snowballLandFarm = await hre.ethers.getContractAt("SnowballLandFarm", snowballLandFarmAddress);
   await snowballLandFarm.addPool(
-    sbtWbnbAllocPoint, wantsbtWbnbAddress, sbtWbnbWithUpdate, stratSbt.address
+    sbtWbnbAllocPoint, wantsbtWbnbAddress, sbtWbnbWithUpdate, stratSbt.address, options
   )
   console.log("sbt-Wbnb stratSbt added to snowfarm");
 
   await snowballLandFarm.addPool(
-    busdAllocPoint, wantBusdAddress, busdWithUpdate, stratSbt2.address
+    busdAllocPoint, wantBusdAddress, busdWithUpdate, stratSbt2.address, options
   )
   console.log("BUSD stratSbt added to snowfarm");
 
   await snowballLandFarm.addPool(
-    wbnbAllocPoint, wantWbnbAddress, wbnbWithUpdate, stratSbt3.address
+    wbnbAllocPoint, wantWbnbAddress, wbnbWithUpdate, stratSbt3.address, options
   )
   console.log("Wbnb stratSbt added to snowfarm");
 }

@@ -1,7 +1,7 @@
 module.exports = {
   // SnowballLand
-  devAddr: '0x0000000000000000000000000000000000000000', // TODO: Change to dev address
-  minter: '0x0000000000000000000000000000000000000000', // TODO: Change to liquidity seeder address
+  devAddr: '0xc957b2cda38e52f9b5cd1bf5ff9512ae850ec793', // TODO: Change to dev address
+  minter: '0x939166BA561214c90cFdecff33AcCcE81b2e9542', // TODO: Change to liquidity seeder address
   sbtPerBlock: 0.75,
   startBlock: 7272980, // TODO: Change to intended starting block number 
   bonusLockupBps: 7000, // 70%
