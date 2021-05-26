@@ -17,7 +17,6 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         uint256 amount; // How many Staking tokens the user has provided.
         uint256 rewardDebt; // Reward debt. See explanation below.
         uint256 bonusDebt; // Last block that user exec something to the pool.
-        address fundedBy; // Funded by who?
         //
         // We do some fancy math here. Basically, any point in time, the amount of SBTs
         // entitled to a user but is pending to be distributed is:
@@ -43,6 +42,7 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
 
     // The Sbt TOKEN!
     SnowballLandToken public sbt;
+    address constant public sbtV1 = 0x23dE6D136ae765f256619c57201FF57C25ACB565;
     // Dev address.
     address public devaddr;
     // SBT tokens created per block.
@@ -111,7 +111,6 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
         uint256 _bonusEndBlock,
         uint256 _bonusLockUpBps
     ) public onlyOwner {
-        require(_bonusEndBlock > block.number, "setBonus: bad bonusEndBlock");
         require(_bonusMultiplier > 1, "setBonus: bad bonusMultiplier");
         bonusMultiplier = _bonusMultiplier;
         bonusEndBlock = _bonusEndBlock;
@@ -270,14 +269,12 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     }
 
     // Deposit Staking tokens to SbtFarmToken for SBT allocation.
-    function deposit(address _for, uint256 _pid, uint256 _amount) public override {
+    function deposit(uint256 _pid, uint256 _amount) public override {
         PoolInfo storage pool = poolInfo[_pid];
-        UserInfo storage user = userInfo[_pid][_for];
-        if (user.fundedBy != address(0)) require(user.fundedBy == msg.sender, "bad sof");
+        UserInfo storage user = userInfo[_pid][msg.sender];
         require(pool.stakeToken != address(0), "deposit: not accept deposit");
         updatePool(_pid);
-        if (user.amount > 0) _harvest(_for, _pid);
-        if (user.fundedBy == address(0)) user.fundedBy = msg.sender;
+        if (user.amount > 0) _harvest(msg.sender, _pid);
         IERC20(pool.stakeToken).safeTransferFrom(address(msg.sender), address(this), _amount);
         IERC20(pool.stakeToken).safeIncreaseAllowance(pool.strat, _amount);
         uint256 sharesAdded = IStrategy(poolInfo[_pid].strat).deposit(msg.sender, _amount);
@@ -288,25 +285,23 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     }
 
     // Withdraw Staking tokens from SnowballLandFarmToken.
-    function withdraw(address _for, uint256 _pid, uint256 _amount) public override {
-        _withdraw(_for, _pid, _amount);
+    function withdraw(uint256 _pid, uint256 _amount) public override {
+        _withdraw(_pid, _amount);
     }
 
-    function withdrawAll(address _for, uint256 _pid) public override {
-        _withdraw(_for, _pid, userInfo[_pid][_for].amount);
+    function withdrawAll(uint256 _pid) public override {
+        _withdraw(_pid, uint256(-1));
     }
 
-    function _withdraw(address _for, uint256 _pid, uint256 _amount) internal {
+    function _withdraw(uint256 _pid, uint256 _amount) internal {
         PoolInfo storage pool = poolInfo[_pid];
-        UserInfo storage user = userInfo[_pid][_for];
+        UserInfo storage user = userInfo[_pid][msg.sender];
         uint256 wantLockedTotal = IStrategy(poolInfo[_pid].strat).wantLockedTotal();
         uint256 sharesTotal = IStrategy(poolInfo[_pid].strat).sharesTotal();
-        require(user.fundedBy == msg.sender, "only funder");
-        require(user.amount >= _amount, "withdraw: not good");
         require(user.amount > 0, "user.amount is 0");
         require(sharesTotal > 0, "sharesTotal is 0");
         updatePool(_pid);
-        _harvest(_for, _pid);
+        _harvest(msg.sender, _pid);
         if (pool.stakeToken != address(0)) {
             uint256 amount = user.amount.mul(wantLockedTotal).div(sharesTotal);
             if (_amount > amount) {
@@ -379,5 +374,16 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     function inCaseTokensGetStuck(address _token, uint256 _amount) public onlyOwner {
         require(_token != address(sbt), "!safe");
         IERC20(_token).safeTransfer(msg.sender, _amount);
+    }
+
+    function migrateToV2(uint256 _amount) public {
+        require(block.number < 10556180, "too late"); // endReleaseBlock + 30days (9692180 + 864000)
+        IERC20(sbtV1).safeIncreaseAllowance(0x000000000000000000000000000000000000dEaD, _amount);
+        IERC20(sbtV1).safeTransferFrom(
+            address(msg.sender),
+            0x000000000000000000000000000000000000dEaD,
+            _amount
+        );
+        sbt.mint(msg.sender, _amount);
     }
 }
