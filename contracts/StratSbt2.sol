@@ -46,7 +46,7 @@ abstract contract StratSbt2 is Ownable, ReentrancyGuard, Pausable {
 
     uint256 public controllerFee = 0; // 70;
     uint256 public constant controllerFeeMax = 10000; // 100 = 1%
-    uint256 public constant controllerFeeUL = 10000;
+    uint256 public constant controllerFeeUL = 3000;
 
     uint256 public buyBackRate = 0; // 250;
     uint256 public constant buyBackRateMax = 10000; // 100 = 1%
