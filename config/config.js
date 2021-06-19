@@ -10,8 +10,8 @@ module.exports = {
   startReleaseBlock: 7676180, // bonusEndBlock
   endReleaseBlock: 9692180, // startReleaseBlock + 70 * 28800 (70 days)
   // Strategy (values depend on different cases, hence require changes on deploy)
-  sbtAddress: '0x23dE6D136ae765f256619c57201FF57C25ACB565', // TODO: Change to SBT address
-  snowballLandFarmAddress: '0x4037b7d049b5CD3044Dad8957204cBa1627621bc', // TODO: Change to SnowballLandFarm address
+  sbtAddress: '0x5C4dcBde67fa7cc2098f89e58148e41234A30af4', // TODO: Change to SBT address
+  snowballLandFarmAddress: '0xafD5318CF9A817009cC2b7413eef8558A681Db34', // TODO: Change to SnowballLandFarm address
   isCAKEStaking: false, // Strategy dependent
   isAutoComp: false, // Strategy dependent
   farmContractAddress: '0x0000000000000000000000000000000000000000', // Refers to underlying farm contract (pancakeswap masterchef etc)

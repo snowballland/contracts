@@ -69,25 +69,25 @@ async function main() {
   console.log("--------------------");
 
   //---------depoly BUSD strategy-----------//
-  const stratSbt2 = await StratSbt.deploy(
-    snowballLandFarmAddress, sbtAddress, isCAKEStaking, isAutoComp, farmContractAddress, pid, 
-    wantBusdAddress, token0Address, token1Address, earnedAddress, uniRouterAddress,
-  );
-  await stratSbt2.deployed();
-  console.log("BUSD stratSbt deployed to:", stratSbt2.address);
-  console.log("- Constructor Args -");
-  console.log(wantBusdAddress);
+  // const stratSbt2 = await StratSbt.deploy(
+  //   snowballLandFarmAddress, sbtAddress, isCAKEStaking, isAutoComp, farmContractAddress, pid, 
+  //   wantBusdAddress, token0Address, token1Address, earnedAddress, uniRouterAddress,
+  // );
+  // await stratSbt2.deployed();
+  // console.log("BUSD stratSbt deployed to:", stratSbt2.address);
+  // console.log("- Constructor Args -");
+  // console.log(wantBusdAddress);
 
   //---------depoly WBNB strategy-----------//
 
-  const stratSbt3 = await StratSbt.deploy(
-    snowballLandFarmAddress, sbtAddress, isCAKEStaking, isAutoComp, farmContractAddress, pid, 
-    wantWbnbAddress, token0Address, token1Address, earnedAddress, uniRouterAddress,
-  );
-  await stratSbt3.deployed();
-  console.log("Wbnb stratSbt deployed to:", stratSbt3.address);
-  console.log("- Constructor Args -");
-  console.log(wantWbnbAddress);
+  // const stratSbt3 = await StratSbt.deploy(
+  //   snowballLandFarmAddress, sbtAddress, isCAKEStaking, isAutoComp, farmContractAddress, pid, 
+  //   wantWbnbAddress, token0Address, token1Address, earnedAddress, uniRouterAddress,
+  // );
+  // await stratSbt3.deployed();
+  // console.log("Wbnb stratSbt deployed to:", stratSbt3.address);
+  // console.log("- Constructor Args -");
+  // console.log(wantWbnbAddress);
 
   // Add to snow farm
   if (network !== 'mainnet') {
@@ -100,15 +100,15 @@ async function main() {
   )
   console.log("sbt-Wbnb stratSbt added to snowfarm");
 
-  await snowballLandFarm.addPool(
-    busdAllocPoint, wantBusdAddress, busdWithUpdate, stratSbt2.address, options
-  )
-  console.log("BUSD stratSbt added to snowfarm");
+  // await snowballLandFarm.addPool(
+  //   busdAllocPoint, wantBusdAddress, busdWithUpdate, stratSbt2.address, options
+  // )
+  // console.log("BUSD stratSbt added to snowfarm");
 
-  await snowballLandFarm.addPool(
-    wbnbAllocPoint, wantWbnbAddress, wbnbWithUpdate, stratSbt3.address, options
-  )
-  console.log("Wbnb stratSbt added to snowfarm");
+  // await snowballLandFarm.addPool(
+  //   wbnbAllocPoint, wantWbnbAddress, wbnbWithUpdate, stratSbt3.address, options
+  // )
+  // console.log("Wbnb stratSbt added to snowfarm");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
