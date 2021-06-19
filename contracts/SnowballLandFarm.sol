@@ -58,7 +58,7 @@ contract SnowballLandFarm is ISnowballLandFarm, Ownable {
     PoolInfo[] public poolInfo;
     // Info of each user that stakes Staking tokens.
     mapping(uint256 => mapping(address => UserInfo)) public userInfo;
-    // Total allocation poitns. Must be the sum of all allocation points in all pools.
+    // Total allocation points. Must be the sum of all allocation points in all pools.
     uint256 public totalAllocPoint;
     // The block number when SBT mining starts.
     uint256 public startBlock;
